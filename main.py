@@ -110,6 +110,10 @@ def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
                 return float(current_step) / float(max(1, warmup_steps))
             progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
             return 0.5 * (1.0 + np.cos(np.pi * progress))
+    else:
+        # Constant scheduler
+        def lr_lambda(current_step):
+            return 1.0
     return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
 
@@ -159,7 +163,7 @@ if __name__ == '__main__':
                         help='initial learning rate')
     parser.add_argument('--warmup_steps', type=int, default=0,
                         help='Number of steps to perform learning rate warmup')
-    parser.add_argument('--lr_schedule', type=str, default='linear',
+    parser.add_argument('--lr_schedule', type=str, default='none',
                         help='Type of learning rate scheduler (linear | cosine | none)')
     parser.add_argument('--momentum', type=float, default=0,
                         help='momentum')
