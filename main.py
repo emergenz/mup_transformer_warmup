@@ -400,7 +400,7 @@ if __name__ == '__main__':
 
     # Initialize the learning rate scheduler
     total_steps = len(train_data) // args.bptt * args.epochs
-    scheduler = get_lr_scheduler(optimizer, args.lr_scheduler, args.warmup_steps, total_steps)
+    scheduler = get_lr_scheduler(optimizer, args.lr_schedule, args.warmup_steps, total_steps)
 
 
     # half-precision black magic
