@@ -98,6 +98,20 @@ def coord_check(mup, lr, optimizer, batch_size, nsteps, nseeds, data_dir, args, 
         suptitle=f'{prm} Transformer {optimizer} lr={lr} nseeds={nseeds}',
         face_color='xkcd:light grey' if not mup else None)
 
+def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
+    if scheduler_type == 'linear':
+        def lr_lambda(current_step):
+            if current_step < warmup_steps:
+                return float(current_step) / float(max(1, warmup_steps))
+            return max(0.0, float(total_steps - current_step) / float(max(1, total_steps - warmup_steps)))
+    elif scheduler_type == 'cosine':
+        def lr_lambda(current_step):
+            if current_step < warmup_steps:
+                return float(current_step) / float(max(1, warmup_steps))
+            progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
+            return 0.5 * (1.0 + np.cos(np.pi * progress))
+    return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
+
 
 if __name__ == '__main__':
 
@@ -143,6 +157,10 @@ if __name__ == '__main__':
                         help='the number of heads in the encoder/decoder of the transformer model')
     parser.add_argument('--lr', type=float, default=0.001,
                         help='initial learning rate')
+    parser.add_argument('--warmup_steps', type=int, default=0,
+                        help='Number of steps to perform learning rate warmup')
+    parser.add_argument('--lr_schedule', type=str, default='linear',
+                        help='Type of learning rate scheduler (linear | cosine | none)')
     parser.add_argument('--momentum', type=float, default=0,
                         help='momentum')
     parser.add_argument('--output_mult', type=float, default=1,
@@ -246,7 +264,7 @@ if __name__ == '__main__':
         return total_loss / (len(data_source) - 1)
 
 
-    def train(optimizer, epoch):
+    def train(optimizer, scheduler, epoch):
         # Turn on training mode which enables dropout.
         model.train()
         total_loss = 0.
@@ -279,6 +297,7 @@ if __name__ == '__main__':
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
 
             optimizer.step()
+            scheduler.step()
 
             total_loss += loss.item()
             epoch_loss += len(data) * loss.item()
@@ -375,6 +394,11 @@ if __name__ == '__main__':
     else:
         raise ValueError()
 
+    # Initialize the learning rate scheduler
+    total_steps = len(train_data) // args.bptt * args.epochs
+    scheduler = get_lr_scheduler(optimizer, args.lr_scheduler, args.warmup_steps, total_steps)
+
+
     # half-precision black magic
     if args.precision == 'half':
         model, optimizer = amp.initialize(
@@ -401,7 +425,7 @@ if __name__ == '__main__':
     try:
         for epoch in range(start_epoch+1, args.epochs+1):
             epoch_start_time = time.time()
-            train_loss, first_loss = train(optimizer, epoch)
+            train_loss, first_loss = train(optimizer, scheduler, epoch)
             # print(first_loss)
             val_loss = evaluate(val_data)
             print('-' * 89)
