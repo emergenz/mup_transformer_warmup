@@ -119,9 +119,9 @@ def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
 
 def get_run_name(args):
     if args.load_base_shapes:
-        return f'mup_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.width_mult}'
+        return f'mup_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.d_model}'
     else:
-        return f'sp_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.width_mult}'
+        return f'sp_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.d_model}'
 
 
 
