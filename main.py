@@ -111,10 +111,12 @@ def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
                 return float(current_step) / float(max(1, warmup_steps))
             progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
             return 0.5 * (1.0 + np.cos(np.pi * progress))
-    else:
+    elif scheduler_type == 'none':
         # Constant scheduler
         def lr_lambda(current_step):
             return 1.0
+    else:
+        raise ValueError(f'invalid scheduler type {scheduler_type}')
     return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
 def get_run_name(args):
