@@ -2,6 +2,7 @@
 import argparse
 import os
 import time
+import wandb
 
 import numpy as np
 import pandas as pd
@@ -116,6 +117,13 @@ def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
             return 1.0
     return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
+def get_run_name(args):
+    if args.load_base_shapes:
+        return f'mup_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.width_mult}'
+    else:
+        return f'sp_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.width_mult}'
+
+
 
 if __name__ == '__main__':
 
@@ -221,6 +229,15 @@ if __name__ == '__main__':
             print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
     device = args.device = torch.device("cuda" if args.cuda else "cpu")
+    wandb_project_name = 'mup_transformer_warmup'
+    wandb_team_name = "aidos-labs"
+    wandb.init(
+        entity=wandb_team_name,
+        project=wandb_project_name,
+        # track hyperparameters and run metadata
+        config=args.__dict__)
+    wandb.run.name = get_run_name(args)
+
 
     ###############################################################################
     # Load data
@@ -313,6 +330,12 @@ if __name__ == '__main__':
                         'loss {:5.2f} | ppl {:8.2f}'.format(
                     epoch, batch, len(train_data) // args.bptt, lr,
                     elapsed * 1000 / args.log_interval, cur_loss, np.exp(cur_loss)))
+                wandb.log(
+                    {"Train Loss": cur_loss,
+                    "Train PPL": np.exp(cur_loss),
+                    "Epoch": epoch,
+                    "Batch": batch,
+                    "LR": lr})
                 total_loss = 0
                 start_time = time.time()
                 if first_loss is None:
@@ -437,6 +460,10 @@ if __name__ == '__main__':
                     'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                             val_loss, np.exp(val_loss)))
             print('-' * 89)
+            wandb.log(
+                {"Validation Loss": val_loss,
+                "Validation PPL": np.exp(val_loss),
+                "End of epoch": epoch})
             logs.append(dict(
                 epoch=epoch,
                 train_loss=train_loss,
