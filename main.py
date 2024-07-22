@@ -99,26 +99,6 @@ def coord_check(mup, lr, optimizer, batch_size, nsteps, nseeds, data_dir, args, 
         suptitle=f'{prm} Transformer {optimizer} lr={lr} nseeds={nseeds}',
         face_color='xkcd:light grey' if not mup else None)
 
-def get_lr_scheduler(optimizer, scheduler_type, warmup_steps, total_steps):
-    if scheduler_type == 'linear':
-        def lr_lambda(current_step):
-            if current_step < warmup_steps:
-                return float(current_step) / float(max(1, warmup_steps))
-            return max(0.0, float(total_steps - current_step) / float(max(1, total_steps - warmup_steps)))
-    elif scheduler_type == 'cosine':
-        def lr_lambda(current_step):
-            if current_step < warmup_steps:
-                return float(current_step) / float(max(1, warmup_steps))
-            progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
-            return 0.5 * (1.0 + np.cos(np.pi * progress))
-    elif scheduler_type == 'none':
-        # Constant scheduler
-        def lr_lambda(current_step):
-            return 1.0
-    else:
-        raise ValueError(f'invalid scheduler type {scheduler_type}')
-    return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
-
 def get_run_name(args):
     if args.load_base_shapes:
         return f'mup_{args.optimizer}_{args.lr}_{args.warmup_steps}_{args.lr_schedule}_{args.d_model}'
@@ -286,8 +266,7 @@ if __name__ == '__main__':
                 total_loss += len(data) * criterion(output, targets).item()
         return total_loss / (len(data_source) - 1)
 
-
-    def train(optimizer, scheduler, epoch):
+    def train(optimizer, epoch, total_steps, warmup_steps, scheduler_type):
         # Turn on training mode which enables dropout.
         model.train()
         total_loss = 0.
@@ -295,6 +274,21 @@ if __name__ == '__main__':
         start_time = time.time()
         ntokens = len(corpus.dictionary)
         first_loss = None
+        global_step = (epoch - 1) * (len(train_data) // args.bptt)  # start step for this epoch
+
+        def get_lr(current_step):
+            if scheduler_type == 'linear':
+                if current_step < warmup_steps:
+                    return args.lr * (current_step / max(1, warmup_steps))
+                return args.lr
+            elif scheduler_type == 'cosine':
+                if current_step < warmup_steps:
+                    return args.lr * (current_step / max(1, warmup_steps))
+                progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
+                return args.lr * 0.5 * (1.0 + np.cos(np.pi * progress))
+            else:
+                raise ValueError(f'Invalid scheduler type {scheduler_type}')
+
         for batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
             data, targets = get_batch(train_data, i, args.bptt)
             # Starting each batch, we detach the hidden state from how it was previously produced.
@@ -320,7 +314,11 @@ if __name__ == '__main__':
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
 
             optimizer.step()
-            scheduler.step()
+            
+            global_step += 1
+            lr = get_lr(global_step)
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = lr
 
             total_loss += loss.item()
             epoch_loss += len(data) * loss.item()
@@ -425,7 +423,6 @@ if __name__ == '__main__':
 
     # Initialize the learning rate scheduler
     total_steps = len(train_data) // args.bptt * args.epochs
-    scheduler = get_lr_scheduler(optimizer, args.lr_schedule, args.warmup_steps, total_steps)
 
 
     # half-precision black magic
@@ -454,7 +451,7 @@ if __name__ == '__main__':
     try:
         for epoch in range(start_epoch+1, args.epochs+1):
             epoch_start_time = time.time()
-            train_loss, first_loss = train(optimizer, scheduler, epoch)
+            train_loss, first_loss = train(optimizer, epoch, total_steps, args.warmup_steps, args.lr_schedule)
             # print(first_loss)
             val_loss = evaluate(val_data)
             print('-' * 89)
