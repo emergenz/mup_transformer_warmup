@@ -184,7 +184,7 @@ if __name__ == '__main__':
                         help='use CUDA')
     parser.add_argument('--precision', type=str, default='float',
                         help='float | double | half')
-    parser.add_argument('--log_interval', type=int, default=1, metavar='N',
+    parser.add_argument('--log_interval', type=int, default=200, metavar='N',
                         help='report interval')
     parser.add_argument('--save_dir', type=str, default=None,
                         help='path to save the final model')
