@@ -143,7 +143,7 @@ if __name__ == '__main__':
                         help='file location to load base shapes from')
     parser.add_argument('--d_model', type=int, default=256,
                         help='width of the model')
-    parser.add_argument('--ffn_ratio', type=int, default=8/3,
+    parser.add_argument('--ffn_ratio', type=float, default=8/3,
                         help='the ratio of d_ffn to d_model')
     parser.add_argument('--nlayers', type=int, default=2,
                         help='number of layers')
@@ -386,7 +386,7 @@ if __name__ == '__main__':
         make_base_shapes(base_shapes, delta_shapes, savefile=args.save_base_shapes)
         print('done and exit')
         import sys; sys.exit()
-    model = mdl.TransformerModel(args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=args.d_model*args.ffn_ratio, nlayers=args.nlayers, dropout=args.dropout,
+    model = mdl.TransformerModel(args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=round(args.d_model*args.ffn_ratio), nlayers=args.nlayers, dropout=args.dropout,
                                     tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                     decoder_var=args.init_var, standparam=args.load_base_shapes=='')
     if args.load_base_shapes:
