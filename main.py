@@ -153,7 +153,7 @@ if __name__ == '__main__':
                         help='initial learning rate')
     parser.add_argument('--warmup_steps', type=int, default=0,
                         help='Number of steps to perform learning rate warmup')
-    parser.add_argument('--lr_schedule', type=str, default='none',
+    parser.add_argument('--lr_schedule', type=str, default='cosine',
                         help='Type of learning rate scheduler (linear | cosine | none)')
     parser.add_argument('--momentum', type=float, default=0,
                         help='momentum')
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                         help='input is multiplied by sqrt(input_mult*d_model)')
     parser.add_argument('--attn_mult', type=float, default=1,
                         help='attn is multiplied by sqrt(attn_mult)/head_dim')
-    parser.add_argument('--optimizer', default='musgd', choices=['sgd', 'musgd', 'adam', 'muadam'])
+    parser.add_argument('--optimizer', default='muadam', choices=['sgd', 'musgd', 'adam', 'muadam'])
     parser.add_argument('--init_var', type=float, default=1,
                         help='weights are initialized with variance init_var/ninp')
     parser.add_argument('--clip', type=float, default=1.0,
@@ -174,7 +174,7 @@ if __name__ == '__main__':
                         help='batch size')
     parser.add_argument('--bptt', type=int, default=512,
                         help='sequence length')
-    parser.add_argument('--dropout', type=float, default=0.2,
+    parser.add_argument('--dropout', type=float, default=0.0,
                         help='dropout applied to layers (0 = no dropout)')
     parser.add_argument('--tied', action='store_true',
                         help='tie the word embedding and softmax weights')
