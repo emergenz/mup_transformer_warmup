@@ -143,11 +143,11 @@ if __name__ == '__main__':
                         help='file location to load base shapes from')
     parser.add_argument('--d_model', type=int, default=256,
                         help='width of the model')
-    parser.add_argument('--ffn_ratio', type=int, default=1,
+    parser.add_argument('--ffn_ratio', type=int, default=8/3,
                         help='the ratio of d_ffn to d_model')
     parser.add_argument('--nlayers', type=int, default=2,
                         help='number of layers')
-    parser.add_argument('--nhead', type=int, default=2,
+    parser.add_argument('--nhead', type=int, default=8,
                         help='the number of heads in the encoder/decoder of the transformer model')
     parser.add_argument('--lr', type=float, default=0.001,
                         help='initial learning rate')
@@ -166,13 +166,13 @@ if __name__ == '__main__':
     parser.add_argument('--optimizer', default='musgd', choices=['sgd', 'musgd', 'adam', 'muadam'])
     parser.add_argument('--init_var', type=float, default=1,
                         help='weights are initialized with variance init_var/ninp')
-    parser.add_argument('--clip', type=float, default=0.25,
+    parser.add_argument('--clip', type=float, default=1.0,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=40,
+    parser.add_argument('--epochs', type=int, default=1,
                         help='upper epoch limit')
-    parser.add_argument('--batch_size', type=int, default=20, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                         help='batch size')
-    parser.add_argument('--bptt', type=int, default=35,
+    parser.add_argument('--bptt', type=int, default=512,
                         help='sequence length')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout applied to layers (0 = no dropout)')
