@@ -45,11 +45,14 @@ def batchloader(train_data, bptt):
     for batch, i in enumerate(range(0, train_data.size(0) - 1, bptt)):
         yield get_batch(train_data, i, bptt)
 
-def batchify(data, bsz, device):
+def batchify(data, bsz, device, data_subset_ratio):
     # Work out how cleanly we can divide the dataset into bsz parts.
     nbatch = data.size(0) // bsz
     # Trim off any extra elements that wouldn't cleanly fit (remainders).
     data = data.narrow(0, 0, nbatch * bsz)
+    # Use only the specified percentage of the data
+    data_len = int(data.size(0) * (data_subset_ratio / 100.0))
+    data = data[:data_len]
     # Evenly divide the data across the bsz batches.
     data = data.view(bsz, -1).t().contiguous()
     return data.to(device)
@@ -90,7 +93,7 @@ def coord_check(mup, lr, optimizer, batch_size, nsteps, nseeds, data_dir, args, 
     models = {w: gen(w, standparam=not mup) for w in widths}
 
     
-    train_data = batchify(corpus.train, batch_size, device=args.device)
+    train_data = batchify(corpus.train, batch_size, device=args.device, data_subset_ratio=args.data_subset_ratio)
     df = get_coord_data(models, batchloader(train_data, args.bptt), mup=mup, lr=lr, optimizer=optimizer, flatten_output=True, nseeds=nseeds, nsteps=nsteps, lossfn='nll')
 
     prm = 'μP' if mup else 'SP'
@@ -135,6 +138,7 @@ if __name__ == '__main__':
     ''', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--data', type=str, default='./data/wikitext-2',
                         help='location of the data corpus')
+    parser.add_argument('--data_subset_ratio', type=float, default=1.0, help='Subset ratio of the dataset')
     parser.add_argument('--bias', action='store_true',
                         help='use bias')
     parser.add_argument('--save_base_shapes', type=str, default='',
@@ -170,7 +174,7 @@ if __name__ == '__main__':
                         help='gradient clipping')
     parser.add_argument('--epochs', type=int, default=1,
                         help='upper epoch limit')
-    parser.add_argument('--batch_size', type=int, default=64, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size')
     parser.add_argument('--bptt', type=int, default=512,
                         help='sequence length')
@@ -240,9 +244,9 @@ if __name__ == '__main__':
     # batch processing.
 
     eval_batch_size = 10
-    train_data = batchify(corpus.train, args.batch_size, device)
-    val_data = batchify(corpus.valid, eval_batch_size, device)
-    test_data = batchify(corpus.test, eval_batch_size, device)
+    train_data = batchify(corpus.train, args.batch_size, device, data_subset_ratio=args.data_subset_ratio)
+    val_data = batchify(corpus.valid, eval_batch_size, device, data_subset_ratio=args.data_subset_ratio)
+    test_data = batchify(corpus.test, eval_batch_size, device, data_subset_ratio=args.data_subset_ratio)
 
     ###############################################################################
     # Build the model
