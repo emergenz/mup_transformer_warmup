@@ -141,17 +141,17 @@ if __name__ == '__main__':
                         help='file location to save base shapes at')
     parser.add_argument('--load_base_shapes', type=str, default='',
                         help='file location to load base shapes from')
-    parser.add_argument('--d_model', type=int, default=256,
+    parser.add_argument('--d_model', type=int, default=512,
                         help='width of the model')
     parser.add_argument('--ffn_ratio', type=float, default=8/3,
                         help='the ratio of d_ffn to d_model')
-    parser.add_argument('--nlayers', type=int, default=2,
+    parser.add_argument('--nlayers', type=int, default=16,
                         help='number of layers')
     parser.add_argument('--nhead', type=int, default=8,
                         help='the number of heads in the encoder/decoder of the transformer model')
     parser.add_argument('--lr', type=float, default=0.001,
                         help='initial learning rate')
-    parser.add_argument('--warmup_steps', type=int, default=0,
+    parser.add_argument('--warmup_steps', type=int, default=100,
                         help='Number of steps to perform learning rate warmup')
     parser.add_argument('--lr_schedule', type=str, default='cosine',
                         help='Type of learning rate scheduler (linear | cosine | none)')
