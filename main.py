@@ -138,7 +138,7 @@ if __name__ == '__main__':
     ''', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--data', type=str, default='./data/wikitext-2',
                         help='location of the data corpus')
-    parser.add_argument('--data_subset_ratio', type=float, default=1.0, help='Subset ratio of the dataset')
+    parser.add_argument('--data_subset_ratio', type=float, default=0.01, help='Subset ratio of the dataset')
     parser.add_argument('--bias', action='store_true',
                         help='use bias')
     parser.add_argument('--save_base_shapes', type=str, default='',
@@ -172,7 +172,7 @@ if __name__ == '__main__':
                         help='weights are initialized with variance init_var/ninp')
     parser.add_argument('--clip', type=float, default=1.0,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=1,
+    parser.add_argument('--epochs', type=int, default=10,
                         help='upper epoch limit')
     parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size')
