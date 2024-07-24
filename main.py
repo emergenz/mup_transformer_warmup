@@ -51,7 +51,7 @@ def batchify(data, bsz, device, data_subset_ratio):
     # Trim off any extra elements that wouldn't cleanly fit (remainders).
     data = data.narrow(0, 0, nbatch * bsz)
     # Use only the specified percentage of the data
-    data_len = int(data.size(0) * (data_subset_ratio / 100.0))
+    data_len = int(data.size(0) * data_subset_ratio)
     data = data[:data_len]
     # Evenly divide the data across the bsz batches.
     data = data.view(bsz, -1).t().contiguous()
