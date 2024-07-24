@@ -68,7 +68,7 @@ def setprec(t, precision):
 def coord_check(mup, lr, optimizer, batch_size, nsteps, nseeds, data_dir, args, plotdir='', legend=False):
 
     corpus = data.Corpus(data_dir)
-    ntokens = len(corpus.dictionary)
+    ntokens = len(corpus.tokenizer)
 
     def gen(w, standparam=False):
         import model as _model
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     ###############################################################################
 
 
-    ntokens = len(corpus.dictionary)
+    ntokens = len(corpus.tokenizer)
 
 
 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         # Turn on evaluation mode which disables dropout.
         model.eval()
         total_loss = 0.
-        ntokens = len(corpus.dictionary)
+        ntokens = len(corpus.tokenizer)
         with torch.no_grad():
             for i in range(0, data_source.size(0) - 1, args.bptt):
                 data, targets = get_batch(data_source, i, args.bptt)
@@ -272,7 +272,7 @@ if __name__ == '__main__':
         total_loss = 0.
         epoch_loss = 0.
         start_time = time.time()
-        ntokens = len(corpus.dictionary)
+        ntokens = len(corpus.tokenizer)
         first_loss = None
         global_step = (epoch - 1) * (len(train_data) // args.bptt)  # start step for this epoch
 
