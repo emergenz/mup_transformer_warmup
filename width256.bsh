@@ -47,6 +47,126 @@ transformer_encoder.layers.1.self_attn.in_proj_weight:
 transformer_encoder.layers.1.self_attn.out_proj.weight:
 - 256
 - 256
+transformer_encoder.layers.10.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.10.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.10.norm1.bias:
+- 256
+transformer_encoder.layers.10.norm1.weight:
+- 256
+transformer_encoder.layers.10.norm2.bias:
+- 256
+transformer_encoder.layers.10.norm2.weight:
+- 256
+transformer_encoder.layers.10.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.10.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.11.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.11.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.11.norm1.bias:
+- 256
+transformer_encoder.layers.11.norm1.weight:
+- 256
+transformer_encoder.layers.11.norm2.bias:
+- 256
+transformer_encoder.layers.11.norm2.weight:
+- 256
+transformer_encoder.layers.11.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.11.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.12.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.12.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.12.norm1.bias:
+- 256
+transformer_encoder.layers.12.norm1.weight:
+- 256
+transformer_encoder.layers.12.norm2.bias:
+- 256
+transformer_encoder.layers.12.norm2.weight:
+- 256
+transformer_encoder.layers.12.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.12.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.13.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.13.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.13.norm1.bias:
+- 256
+transformer_encoder.layers.13.norm1.weight:
+- 256
+transformer_encoder.layers.13.norm2.bias:
+- 256
+transformer_encoder.layers.13.norm2.weight:
+- 256
+transformer_encoder.layers.13.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.13.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.14.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.14.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.14.norm1.bias:
+- 256
+transformer_encoder.layers.14.norm1.weight:
+- 256
+transformer_encoder.layers.14.norm2.bias:
+- 256
+transformer_encoder.layers.14.norm2.weight:
+- 256
+transformer_encoder.layers.14.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.14.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.15.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.15.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.15.norm1.bias:
+- 256
+transformer_encoder.layers.15.norm1.weight:
+- 256
+transformer_encoder.layers.15.norm2.bias:
+- 256
+transformer_encoder.layers.15.norm2.weight:
+- 256
+transformer_encoder.layers.15.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.15.self_attn.out_proj.weight:
+- 256
+- 256
 transformer_encoder.layers.2.linear1.weight:
 - 683
 - 256
@@ -165,5 +285,45 @@ transformer_encoder.layers.7.self_attn.in_proj_weight:
 - 768
 - 256
 transformer_encoder.layers.7.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.8.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.8.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.8.norm1.bias:
+- 256
+transformer_encoder.layers.8.norm1.weight:
+- 256
+transformer_encoder.layers.8.norm2.bias:
+- 256
+transformer_encoder.layers.8.norm2.weight:
+- 256
+transformer_encoder.layers.8.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.8.self_attn.out_proj.weight:
+- 256
+- 256
+transformer_encoder.layers.9.linear1.weight:
+- 683
+- 256
+transformer_encoder.layers.9.linear2.weight:
+- 256
+- 683
+transformer_encoder.layers.9.norm1.bias:
+- 256
+transformer_encoder.layers.9.norm1.weight:
+- 256
+transformer_encoder.layers.9.norm2.bias:
+- 256
+transformer_encoder.layers.9.norm2.weight:
+- 256
+transformer_encoder.layers.9.self_attn.in_proj_weight:
+- 768
+- 256
+transformer_encoder.layers.9.self_attn.out_proj.weight:
 - 256
 - 256
