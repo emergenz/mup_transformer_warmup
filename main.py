@@ -145,7 +145,7 @@ if __name__ == '__main__':
                         help='width of the model')
     parser.add_argument('--ffn_ratio', type=float, default=8/3,
                         help='the ratio of d_ffn to d_model')
-    parser.add_argument('--nlayers', type=int, default=16,
+    parser.add_argument('--nlayers', type=int, default=8, # sane default (gemma config) would be 16, but we reduce it due to computational constraints
                         help='number of layers')
     parser.add_argument('--nhead', type=int, default=8,
                         help='the number of heads in the encoder/decoder of the transformer model')
