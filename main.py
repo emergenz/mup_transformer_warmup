@@ -73,7 +73,7 @@ def coord_check(mup, lr, optimizer, batch_size, nsteps, nseeds, data_dir, args, 
     def gen(w, standparam=False):
         import model as _model
         def f():
-            model = _model.TransformerModel(args, ntokens, ninp=w, nhead=args.nhead, nhid=w*args.ffn_ratio, nlayers=args.nlayers, dropout=args.dropout,
+            model = _model.TransformerModel(args, ntokens, ninp=w, nhead=args.nhead, nhid=w*round(args.ffn_ratio), nlayers=args.nlayers, dropout=args.dropout,
                                             tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                             decoder_var=args.init_var, standparam=standparam).to(args.device)
             model = setprec(model, args.precision)
@@ -359,26 +359,26 @@ if __name__ == '__main__':
             from torchdistx.deferred_init import deferred_init
             # We don't need to instantiate the base and delta models
             base_shapes = get_shapes(
-                deferred_init(mdl.TransformerModel, args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=args.d_model*args.ffn_ratio, nlayers=args.nlayers, dropout=args.dropout,
+                deferred_init(mdl.TransformerModel, args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=round(args.d_model*args.ffn_ratio), nlayers=args.nlayers, dropout=args.dropout,
                                         tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                         decoder_var=args.init_var, standparam=args.load_base_shapes=='')
             )
             delta_shapes = get_shapes(
                 # just need to change whatever dimension(s) we are scaling
-                deferred_init(mdl.TransformerModel, args, ntokens, ninp=args.d_model*2, nhead=args.nhead, nhid=args.d_model*args.ffn_ratio*2,
+                deferred_init(mdl.TransformerModel, args, ntokens, ninp=args.d_model*2, nhead=args.nhead, nhid=round(args.d_model*args.ffn_ratio)*2,
                                         nlayers=args.nlayers, dropout=args.dropout,
                                         tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                         decoder_var=args.init_var, standparam=args.load_base_shapes=='')
             )
         else:
             base_shapes = get_shapes(
-                mdl.TransformerModel(args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=args.d_model*args.ffn_ratio, nlayers=args.nlayers, dropout=args.dropout,
+                mdl.TransformerModel(args, ntokens, ninp=args.d_model, nhead=args.nhead, nhid=round(args.d_model*args.ffn_ratio), nlayers=args.nlayers, dropout=args.dropout,
                                         tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                         decoder_var=args.init_var, standparam=args.load_base_shapes=='')
             )
             delta_shapes = get_shapes(
                 # just need to change whatever dimension(s) we are scaling
-                mdl.TransformerModel(args, ntokens, ninp=args.d_model*2, nhead=args.nhead, nhid=args.d_model*args.ffn_ratio*2,
+                mdl.TransformerModel(args, ntokens, ninp=args.d_model*2, nhead=args.nhead, nhid=round(args.d_model*args.ffn_ratio)*2,
                                         nlayers=args.nlayers, dropout=args.dropout,
                                         tied=args.tied, bias=args.bias, encoder_var=args.init_var, 
                                         decoder_var=args.init_var, standparam=args.load_base_shapes=='')
