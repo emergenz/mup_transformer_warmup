@@ -1,40 +1,23 @@
 import os
-import requests
-import zipfile
-import argparse
+from datasets import load_dataset
 
-def download_wikitext103(data_dir):
-    url = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip'
-    zip_path = os.path.join(data_dir, 'wikitext-103-v1.zip')
-    extracted_dir = os.path.join(data_dir, 'wikitext-103')
-    
-    if not os.path.exists(extracted_dir):
-        os.makedirs(data_dir, exist_ok=True)
-        
-        print("Downloading Wikitext-103 dataset...")
-        response = requests.get(url, stream=True)
-        with open(zip_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=128):
-                f.write(chunk)
-                
-        print("Extracting Wikitext-103 dataset...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(data_dir)
-        
-        os.remove(zip_path)
-        print(f"Wikitext-103 dataset extracted to {extracted_dir}")
-    else:
-        print(f"Wikitext-103 dataset already exists in {extracted_dir}")
-        
-    return extracted_dir
+# Define the directory where the data will be saved
+data_dir = './data/wikitext-103'
+os.makedirs(data_dir, exist_ok=True)
 
-def main(args):
-    data_dir = download_wikitext103(args.data_dir)
-    print(f"Wikitext-103 dataset ready at {data_dir}")
+# Load the Wikitext-103 dataset
+dataset = load_dataset('wikitext', 'wikitext-103-v1')
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Download and prepare Wikitext-103 dataset.')
-    parser.add_argument('--data-dir', type=str, default='./data/wikitext-103',
-                        help='location to save the data corpus')
-    args = parser.parse_args()
-    main(args)
+# Function to save the dataset to a text file
+def save_dataset(split, filename):
+    with open(filename, 'w', encoding='utf8') as f:
+        for line in dataset[split]['text']:
+            if line.strip():
+                f.write(line.strip() + '\n')
+
+# Save the train, validation, and test splits
+save_dataset('train', os.path.join(data_dir, 'train.txt'))
+save_dataset('validation', os.path.join(data_dir, 'valid.txt'))
+save_dataset('test', os.path.join(data_dir, 'test.txt'))
+
+print(f"Data saved to {data_dir}")
