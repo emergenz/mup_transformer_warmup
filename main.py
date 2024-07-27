@@ -145,11 +145,11 @@ if __name__ == '__main__':
                         help='file location to save base shapes at')
     parser.add_argument('--load_base_shapes', type=str, default='',
                         help='file location to load base shapes from')
-    parser.add_argument('--d_model', type=int, default=512,
+    parser.add_argument('--d_model', type=int, default=1024,
                         help='width of the model')
     parser.add_argument('--ffn_ratio', type=float, default=8/3,
                         help='the ratio of d_ffn to d_model')
-    parser.add_argument('--nlayers', type=int, default=8, # sane default (gemma config) would be 16, but we reduce it due to computational constraints
+    parser.add_argument('--nlayers', type=int, default=12, # sane default (gemma config) would be 16, but we reduce it due to computational constraints
                         help='number of layers')
     parser.add_argument('--nhead', type=int, default=8,
                         help='the number of heads in the encoder/decoder of the transformer model')
@@ -262,16 +262,18 @@ if __name__ == '__main__':
         model.eval()
         total_loss = 0.
         ntokens = len(corpus.tokenizer)
+        total_tokens = 0
         with torch.no_grad():
             for i in range(0, data_source.size(0) - 1, args.bptt):
                 data, targets = get_batch(data_source, i, args.bptt)
                 output = model(data)
                 output = output.view(-1, ntokens)
-                total_loss += len(data) * criterion(output, targets).item()
-        return total_loss / (len(data_source) - 1)
+                loss = criterion(output, targets).item()
+                total_loss += loss * targets.size(0)
+                total_tokens += targets.size(0)
+        return total_loss / total_tokens
 
     def train(optimizer, epoch, total_steps, warmup_steps, scheduler_type):
-        # Turn on training mode which enables dropout.
         model.train()
         total_loss = 0.
         epoch_loss = 0.
@@ -295,9 +297,6 @@ if __name__ == '__main__':
 
         for batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
             data, targets = get_batch(train_data, i, args.bptt)
-            # Starting each batch, we detach the hidden state from how it was previously produced.
-            # If we didn't, the model would try backpropagating all the way to start of the dataset.
-            
             optimizer.zero_grad()
             output = model(data)
             output = output.view(-1, ntokens)
@@ -311,7 +310,6 @@ if __name__ == '__main__':
                 loss.backward()
 
             if args.clip > 0:
-                # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
                 if args.precision == 'half':
                     torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), args.clip)
                 else:
@@ -325,7 +323,7 @@ if __name__ == '__main__':
                 param_group['lr'] = lr
 
             total_loss += loss.item()
-            epoch_loss += len(data) * loss.item()
+            epoch_loss += loss.item() * targets.size(0)
 
             if batch % args.log_interval == 0 and batch > 0:
                 cur_loss = total_loss / args.log_interval
@@ -345,7 +343,7 @@ if __name__ == '__main__':
                 if first_loss is None:
                     first_loss = cur_loss
 
-        return epoch_loss / (len(train_data) - 1), first_loss
+        return epoch_loss / len(train_data), first_loss
         
     if args.coord_check:
         print('testing parametrization')
